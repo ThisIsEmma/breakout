@@ -22,8 +22,8 @@
       // JavaScript code goes here
 
         //variabled declaration
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
         let x = canvas.width / 2;
         let y = canvas.height - 30;
         let dx = 2;
@@ -38,27 +38,194 @@
         const brickPadding = 10;
         const brickOffsetTop = 30;
         const brickOffsetLeft = 30;
-        let score = 0;
-        let ballColor = '0095DD';
-        let availableColor = ['red', 'orange', 'green'];
-        let lives = 3;
+        let ballColor = 'black';
+        let availableColor = ['red', 'green'];
+        //let lives = 3;
 
+        // CHALLENGE 4 - DEFINE A CLASS FOR BACKGROUND
+        class Background {
+            constructor(color, height, width){
+                this.color = color;
+                this.height = height;
+                this.width = width;
+            }
 
-        const bricks = [];
-        for (let c = 0; c < brickColumnCount; c++) {
-            bricks[c] = [];
-            for (let r = 0; r < brickRowCount; r++) {
-                bricks[c][r] = { x: 0, y: 0, status: 1 };
+            render(ctx) {
+                ctx.beginPath();
+                ctx.rect(0, 0, this.width, this.height);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
             }
         }
 
+        // CHALLENGE 5 - DEFINE A CLASS FOR SCORE
+        
+        class Score {
+            constructor(x, y, color, score, font) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.score = score;
+                this.font = font;
+            }
+
+            render(ctx) {
+                ctx.font = this.font;
+                ctx.fillStyle = this.color;
+                ctx.fillText(`Score: ${this.score}`, 8, 20);
+            }
+
+            update(points){
+                this.score += points;
+            }
+
+            reset() {
+                this.score = 0;
+            }
+        }
+
+        bricksArr = [];
+        for (let c = 0; c < brickColumnCount; c++) {
+            bricksArr[c] = [];
+            for (let r = 0; r < brickRowCount; r++) {
+                bricksArr[c][r] = { x: 0, y: 0, status: 1 };
+            }
+        }
+
+        // CHALLENGE 6 - DEFINE A CLASS FOR LIVES
+        class Lives {
+            constructor(x, y, color, font) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.lives = 3;
+                this.font = font;
+            }
+
+            render(ctx) {
+                ctx.font = this.font;
+                ctx.fillStyle = this.color;
+                ctx.fillText(`Lives: ${this.lives}`, canvas.width - 65, 20);
+            }
+
+            loseLife() {
+                this.lives--;
+            }
+
+            reset() {
+                this.lives = 3;
+            }
+        }
+
+        let lives = new Lives(x,y,'#0095DD','16px Arial');
 
 
+        // CHALLENGE 1 - DEFINE A CLASS FOR BALL 
+        class Ball {
+            constructor(radius, color, x, y, dx, dy) {
+                this.radius = radius;
+                this.color = color;
+                this.x = x;
+                this.y = y;
+                this.dx = dx;
+                this.dy = dy;
+            }
 
-        //Paddle to catch the ball 
+            render(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            move() {
+                this.x += this.dx;
+                this.y += this.dy;
+
+                if (this.x + this.dx > canvas.width - this.radius || this.x + this.dx < 0) {
+                    this.dx = -this.dx;
+                }
+
+                if (this.y + this.dy < this.radius) {
+                    this.dy = -this.dy;
+                } else if (this.y + this.dy > canvas.height - this.radius) {
+                    if (this.x > paddleX && this.x < paddleX + paddleWidth) {
+                        this.dy = -this.dy * 1.25;  //Made the ball move faster after hitting the paddle
+                    } else {
+                        lives.lives--;
+                        if (!lives) {
+                            alert("GAME OVER, NO MORE LIVES");
+                            document.location.reload();
+                        } else {
+                            this.x = canvas.width / 2;
+                            this.y = canvas.height - 30;
+                            this.dx = 2;
+                            this.dy = -2;
+                            paddleX = (canvas.width - paddleWidth) / 2;
+                        }
+                    }
+                }
+            }
+        }
+
+        // CHALLENGE 2 - DEFINE A CLASS FOR BRICK
+        class Brick {
+            constructor (x, y, status, color, width, height) {
+                this.x = x;
+                this.y = y;
+                this.status = status;
+                this.color = color;
+                this.width = width;
+                this.height = height;
+            }
+
+        
+            render(ctx) {
+                for (let c = 0; c < brickColumnCount; c++) {
+                    for (let r = 0; r < brickRowCount; r++) {
+                        if (bricksArr[c][r].status === 1) {
+                            const brickX = c * (this.width + brickPadding) + brickOffsetLeft;
+                            const brickY = r * (this.height + brickPadding) + brickOffsetTop;
+                            bricksArr[c][r].x = brickX;
+                            bricksArr[c][r].y = brickY;
+                            ctx.beginPath();
+                            ctx.rect(brickX, brickY, this.width, this.height);
+                            ctx.fillStyle = this.color;
+                            ctx.fill();
+                            ctx.closePath();
+                        }
+                    }
+                }
+                
+            }
+        }
+        
+        // CHALLENGE 3 - DEFINE A CLASS FOR PADDLE 
         const paddleHeight = 10;
         const paddleWidth = 75;
         let paddleX = (canvas.width - paddleWidth) / 2;
+
+        class Paddle {
+            constructor(x, y, color, width, heigth) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.width = width;
+                this.height = heigth;
+            }
+
+            render(ctx) {
+                ctx.beginPath();
+                ctx.rect(paddleX, canvas.height - this.height, this.width, this.height);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+        
 
         function keyDownHandler(e) {
             if (e.key === "Right" || e.key === "ArrowRight") {
@@ -89,19 +256,19 @@
         function collisionDetection() {
             for (let c = 0; c < brickColumnCount; c++) {
                 for (let r = 0; r < brickRowCount; r++) {
-                    const b = bricks[c][r];
+                    const b = bricksArr[c][r];
                     if (b.status === 1) {
                         if (
-                            x > b.x &&
-                            x < b.x + brickWidth &&
-                            y > b.y &&
-                            y < b.y + brickHeight
+                            ball.x > b.x &&
+                            ball.x < b.x + brickWidth &&
+                            ball.y > b.y &&
+                            ball.y < b.y + brickHeight
                             ) {
-                            dy = -dy;
+                            ball.dy = -ball.dy;
                             b.status = 0;
-                            score++;
-                            ballColor = availableColor[Math.floor(Math.random() * availableColor.length)];
-                            if (score === brickRowCount * brickColumnCount) {
+                            score.update(1);
+                            ball.color = availableColor[Math.floor(Math.random() * availableColor.length)];
+                            if (score.score === brickRowCount * brickColumnCount) {
                                 alert("YOU WIN, CONGRATULATIONS!");
                                 document.location.reload();
                             }
@@ -111,84 +278,27 @@
             }
         }
 
-        function drawScore() {
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#0095DD";
-            ctx.fillText(`Score: ${score}`, 8, 20);
-        }
-
-
         function drawLives() {
             ctx.font = "16px Arial";
             ctx.fillStyle = "#0095DD";
             ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
         }
 
-
-        function drawBall() {
-            ctx.beginPath();
-            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-            ctx.fillStyle = ballColor;
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        function drawPaddle() {
-            ctx.beginPath();
-            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = "#0095DD";
-            ctx.fill();
-            ctx.closePath();
-        }
-
-        function drawBricks() {
-            for (let c = 0; c < brickColumnCount; c++) {
-                for (let r = 0; r < brickRowCount; r++) {
-                    if (bricks[c][r].status === 1) {
-                        const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-                        const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-                        bricks[c][r].x = brickX;
-                        bricks[c][r].y = brickY;
-                        ctx.beginPath();
-                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = "white";
-                        ctx.fill();
-                        ctx.closePath();
-                    }
-                }
-            }
-        }
+        const ball = new Ball(ballRadius, ballColor, x, y, dx, dy);
+        const bricks = new Brick(x, y, 1, "white", brickWidth, brickHeight);
+        const paddle = new Paddle(x, y, "#0095DD", paddleWidth, paddleHeight);
+        const background = new Background("gray", canvas.height, canvas.width);
+        let score = new Score(x, y, '#0095DD', 0, '16px Arial');
+        
 
         function draw() {
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBall();
-            x += dx;
-            y += dy;
-
-            if (x + dx > canvas.width - ballRadius || x + dx < 0) {
-                dx = -dx;
-            }
-
-            if (y + dy < ballRadius) {
-                dy = -dy;
-            } else if (y + dy > canvas.height - ballRadius) {
-                if (x > paddleX && x < paddleX + paddleWidth) {
-                    dy = -dy * 1.5;  //Made the ball move faster after hitting the paddle
-                } else {
-                    lives--;
-                    if (!lives) {
-                        alert("GAME OVER, NO MORE LIVES");
-                        document.location.reload();
-                    } else {
-                        x = canvas.width / 2;
-                        y = canvas.height - 30;
-                        dx = 2;
-                        dy = -2;
-                        paddleX = (canvas.width - paddleWidth) / 2;
-                    }
-                }
-            }
+            background.render(ctx);
+            ball.render(ctx);
+            ball.move();
+            bricks.render(ctx);
+            paddle.render(ctx);
 
             if (rightPressed) {
                 paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
@@ -196,11 +306,10 @@
                 paddleX = Math.max(paddleX - 7, 0);
             }
             
-            drawBricks();
-            drawPaddle();
+            
+            score.render(ctx);
             collisionDetection();
-            drawScore();
-            drawLives();
+            lives.render(ctx);
             requestAnimationFrame(draw);
         }
 
@@ -208,8 +317,6 @@
         document.addEventListener("keyup", keyUpHandler, false);
         
         draw();
-
-        
     </script>
   </body>
 </html>
