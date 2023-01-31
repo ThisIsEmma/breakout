@@ -1,0 +1,26 @@
+{
+  "name": "breakout",
+  "version": "1.0.0",
+  "description": "Refactoring the initial code for the breakout game to practice OOP and inheritance.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "develop": "webpack --mode development --watch",
+    "build": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThisIsEmma/breakout.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThisIsEmma/breakout/issues"
+  },
+  "homepage": "https://github.com/ThisIsEmma/breakout#readme",
+  "devDependencies": {
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  }
+}
