@@ -1,9 +1,9 @@
 import Sprite from "./sprite";
 
 class GameLabel extends Sprite {
-    constructor(x, y, text, font='16px Helvetica', color = 'red', align = 'left') {
+    constructor(x, y, text, font='16px Helvetica', color = '#e28743', align = 'left') {
         // call super with properties as you would initialize sprite
-        super(x, y, color='red')
+        super(x, y, color)
         // define the new properties here on this: this.text and this.font
         this.font = font;
         //this.width = 0;
@@ -42,8 +42,7 @@ const brickHeight = 20;
 const brickPadding = 10;
 const brickOffsetTop = 30;
 const brickOffsetLeft = 30;
-let ballColor = 'black';
-let availableColor = ['red', 'green'];
+let availableColor = ['#abdbe3', '#063970'];
 let score = 0;
 let lives = 3;
 
@@ -63,37 +62,6 @@ class Background {
         ctx.closePath();
     }
 }
-
-// CHALLENGE 5 - DEFINE A CLASS FOR SCORE
-
-class Score {
-    constructor(x, y, color, score, font) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.score = score;
-        this.font = font;
-    }
-
-    render(ctx) {
-        ctx.font = this.font;
-        ctx.fillStyle = this.color;
-        ctx.fillText(`Score: ${this.score}`, 8, 20);
-    }
-
-    update(points){
-        this.score += points;
-    }
-
-    reset() {
-        this.score = 0;
-    }
-}
-
-
-
-
-const livesLabel = new GameLabel(canvas.width - 65, 20, 'Lives: 3');
 
 // DEFINE A CLASS FOR BALL, INHERITS SPRITE CLASS 
 class Ball extends Sprite{
@@ -195,7 +163,7 @@ class Bricks {
         for (let c = 0; c < this.cols; c += 1) {
             this.bricks[c] = [];
             for (let r = 0; r < this.rows; r += 1) {
-                const brick = new Brick(x, y, brickWidth, brickHeight, "white");
+                const brick = new Brick(x, y, brickWidth, brickHeight, "#fbdaa4");
                 brick.x = (c * (brick.width + 10)) + 30;
                 brick.y = (r * (brick.height + 10)) + 30;
                 this.bricks[c][r] = brick;
@@ -263,7 +231,7 @@ function mouseMoveHandler(e) {
 document.addEventListener("mousemove", mouseMoveHandler, false);
 
 const scoreLabel = new GameLabel(10, 20, 'Score: 0');
-
+const livesLabel = new GameLabel(canvas.width - 65, 20, 'Lives: 3');
 
 function collisionDetection() {
     for (let c = 0; c < brickColumnCount; c++) {
@@ -291,9 +259,9 @@ function collisionDetection() {
     }
 }
 
-const ball = new Ball(canvas.width / 2, canvas.height - 30, ballRadius, 'orange');
-const paddle = new Paddle(x, y, "#0095DD", paddleWidth, paddleHeight);
-const background = new Background("gray", canvas.height, canvas.width);
+const ball = new Ball(canvas.width / 2, canvas.height - 30, ballRadius, '#e28743');
+const paddle = new Paddle(x, y, "#e28743", paddleWidth, paddleHeight);
+const background = new Background("#eab676", canvas.height, canvas.width);
 const buildBricks = new Bricks(3, 5);
 buildBricks.setup();
 
