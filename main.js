@@ -37,10 +37,6 @@ class GameLabel extends Sprite {
     }
 
     render(ctx) {
-        // Add the code here to draw your text label
-        // set the font: with ctx.font = this.font
-        // Align the text with ctx.textAlign = this.align
-        // ...
         ctx.font = this.font;
         ctx.textAlign = this.align;
         ctx.fillStyle = this.color;
@@ -122,35 +118,6 @@ for (let c = 0; c < brickColumnCount; c++) {
         bricksArr[c][r] = { x: 0, y: 0, status: 1 };
     }
 }
-
-// DEFINE A CLASS FOR LIVES - used the class 'Gamelabel' to generate the lives instead
-/*
-class Lives {
-    constructor(x, y, color, font) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.lives = 3;
-        this.font = font;
-    }
-
-    render(ctx) {
-        ctx.font = this.font;
-        ctx.fillStyle = this.color;
-        ctx.fillText(`Lives: ${this.lives}`, canvas.width - 65, 20);
-    }
-
-    loseLife() {
-        this.lives--;
-    }
-
-    reset() {
-        this.lives = 3;
-    }
-}
-let lives = new Lives(x,y,'#0095DD','16px Arial');
-*/
-
 
 const livesLabel = new GameLabel(canvas.width - 65, 20, 'Lives: 3');
 
